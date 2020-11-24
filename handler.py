@@ -50,11 +50,14 @@ def search(data):
         )
         # Just respond with a link to the latest posting
         response = str(itemlist[0]["href"])
-        sendMessage({"text": response.encode("utf8"), "chat_id": chat_id})
     except IndexError as e:
         # Generic search error
         response = stringlibrary.ILLEGAL_SEARCH
-        sendMessage({"text": response.encode("utf8"), "chat_id": chat_id})
+    except AttributeError as e:
+        # AttributeError is raised when no results are found
+        response = stringlibrary.NO_RESULTS_FOUND
+
+    sendMessage({"text": response.encode("utf8"), "chat_id": chat_id})
 
 
 # Handles bot message sending, must include text and chat_id JSON entries
