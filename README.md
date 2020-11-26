@@ -9,5 +9,4 @@ Torivahti "backend" code can be found here: https://github.com/ttalikka/torivaht
 
 ## TODO
 * Database updating through the chatbot
-    * Setting new alerts
     * Removing old alerts
