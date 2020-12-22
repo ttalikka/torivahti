@@ -8,5 +8,3 @@ Torivahti chatbot is responsible for handling the messaging from the user, such 
 Torivahti "backend" code can be found here: https://github.com/ttalikka/torivahti-agent
 
 ## TODO
-* Database updating through the chatbot
-    * Removing old alerts
