@@ -12,6 +12,7 @@ sys.path.append(os.path.join(here, "./vendored"))
 import requests
 from bs4 import BeautifulSoup
 import boto3
+from boto3.dynamodb.conditions import Key, Attr
 
 # Base variables
 TOKEN = os.environ["TELEGRAM_TOKEN"]
@@ -38,6 +39,8 @@ def hello(event, context):
             search(data)
         elif message.startswith(stringlibrary.WATCH_CMD):
             watch(data)
+        elif message.startswith(stringlibrary.REMOVEWATCH_CMD):
+            removeWatch(data)
         else:
             sendMessage(
                 {
@@ -102,6 +105,40 @@ def watch(data):
                 "chat_id": data["message"]["chat"]["id"],
             }
         )
+
+    except Exception as e:
+        pass
+
+
+# Sets a watcher for a search query
+def removeWatch(data):
+    try:
+        # Split the received message into search terms
+        params = getParameters(data)
+        print(params)
+        # Build a URL-friendly search query
+        searchQuery = "+".join(params[1:])
+        print(searchQuery)
+        chat = str(data["message"]["chat"]["id"])
+        response = table.scan(
+            FilterExpression=Attr("searchQuery").eq(searchQuery) & Attr("chat").eq(chat)
+        )
+        print(response)
+        if response["Count"] > 0:
+            sendMessage(
+                {
+                    "text": stringlibrary.WATCH_REMOVED.encode("utf8"),
+                    "chat_id": data["message"]["chat"]["id"],
+                }
+            )
+            table.delete_item(Key={"id": response["Items"][0]["id"]})
+        else:
+            sendMessage(
+                {
+                    "text": stringlibrary.WATCH_NOT_FOUND.encode("utf8"),
+                    "chat_id": data["message"]["chat"]["id"],
+                }
+            )
 
     except Exception as e:
         pass
